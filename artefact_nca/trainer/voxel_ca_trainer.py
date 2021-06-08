@@ -223,7 +223,7 @@ class VoxelCATrainer(BaseTorchTrainer):
                 weight=weight.to(self.device),
             )
         loss = (0.5 * class_loss + 0.5 * alive_loss + iou_loss) / 3.0
-        return loss, iou_loss
+        return loss.mean(), iou_loss
 
     def get_loss_for_single_instance(self, x, rearrange_input=False):
         if rearrange_input:

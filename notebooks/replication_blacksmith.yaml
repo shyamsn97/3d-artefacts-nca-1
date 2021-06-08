@@ -1,0 +1,20 @@
+trainer:
+    name: PlainBlacksmithReplication
+    min_steps: 1
+    max_steps: 2
+    visualize_output: true
+    device_id: 0
+    use_cuda: false
+    num_hidden_channels: 10
+    epochs: 20000
+    batch_size: 5
+    model_config:
+        normal_std: 0.1
+        update_net_channel_dims: [32, 32]
+    optimizer_config:
+        lr: 0.001
+    dataset_config:
+        nbt_path: artefact_nca/data/structs_dataset/nbts/village/plain_village_blacksmith.nbt
+
+defaults:
+  - replication

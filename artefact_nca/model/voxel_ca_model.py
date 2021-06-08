@@ -163,8 +163,9 @@ class VoxelCAModel(BaseTorchModel):
             x[:, :1, :, :, :][life_mask == 0.0] += torch.tensor(1.0).to(self.device)
         return x, life_mask
 
-    def forward(self, x, steps=1, rearrange_output=True, return_life_mask=False):
-        x = rearrange(x, "b d h w c -> b c d h w")
+    def forward(self, x, steps=1, rearrange_input=True, rearrange_output=True, return_life_mask=False):
+        if rearrange_input:
+            x = rearrange(x, "b d h w c -> b c d h w")
         for step in range(steps):
             x, life_mask = self.update(x)
         if rearrange_output:
