@@ -11,8 +11,9 @@ class ReplicationNCATrainer(VoxelCATrainer):
     steps_per_duplication: int = attr.ib(default=8)
     norm_grad: bool = attr.ib(default=False)
 
-    def duplicate(self, x):
-        shape = x.shape
+    def duplicate(self, x, shape=None):
+        if shape is None:
+            shape = x.shape
         d, h, w = shape[2], shape[3], shape[4]
         x = torch.repeat_interleave(torch.repeat_interleave(torch.repeat_interleave(x, 2, dim=2), 2, dim=3), 2, dim=4)  # cell division
         x = x[
@@ -27,9 +28,9 @@ class ReplicationNCATrainer(VoxelCATrainer):
     def train_func(self, x, targets, steps=None):
         self.optimizer.zero_grad()
         x = self.model(x, steps=self.steps_per_duplication, rearrange_output=False)
-
+        shape = x.shape
         for i in range(self.n_duplications):
-            x = self.duplicate(x)
+            x = self.duplicate(x, shape)
             x = self.model(x, steps=self.steps_per_duplication, rearrange_input=False, rearrange_output=False)
 
         loss, iou_loss = self.get_loss(x, targets)
