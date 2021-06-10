@@ -1,0 +1,22 @@
+trainer:
+    name: Extra_dark_oak
+    min_steps: 64
+    max_steps: 65
+    visualize_output: false
+    device_id: 0
+    use_cuda: true
+    num_hidden_channels: 12
+    epochs: 20000
+    batch_size: 5
+    n_duplications: 3
+    model_config:
+        normal_std: 0.1
+        update_net_channel_dims: [64, 64]
+    optimizer_config:
+        lr: 0.002
+    dataset_config:
+        nbt_path: structs_dataset/nbts/village/Extra_dark_oak.nbt
+        load_entity_config:
+            padding: [[4,5], [3,4], [3,3]]
+defaults:
+  - replication
