@@ -1,0 +1,114 @@
+trainer:
+  model_config:
+    _target_: artefact_nca.model.voxel_ca_model.VoxelCAModel
+    alpha_living_threshold: 0.1
+    cell_fire_rate: 0.5
+    step_size: 1.0
+    perception_requires_grad: true
+    living_channel_dim: null
+    num_hidden_channels: 12
+    normal_std: 0.1
+    use_bce_loss: false
+    use_normal_init: true
+    zero_bias: true
+    update_net_channel_dims:
+    - 64
+    - 64
+  dataset_config:
+    _target_: artefact_nca.dataset.voxel_dataset.VoxelDataset
+    entity_name: null
+    target_voxel: null
+    target_color_dict: null
+    target_unique_val_dict: null
+    nbt_path: structs_dataset/nbts/village/Extra_dark_oak.nbt
+    load_coord:
+    - 50
+    - 10
+    - 10
+    load_entity_config:
+      padding:
+      - - 4
+        - 5
+      - - 3
+        - 4
+      - - 3
+        - 3
+    spawn_at_bottom: false
+    use_random_seed_block: false
+    input_shape: null
+    num_hidden_channels: 12
+    half_precision: false
+    pool_size: 32
+    padding_by_power: null
+    cluster_seed: true
+  dataloader_config:
+    _target_: torch.utils.data.dataloader.DataLoader
+    dataset: ???
+    batch_size: 1
+    shuffle: false
+    sampler: null
+    batch_sampler: null
+    num_workers: 0
+    collate_fn: null
+    pin_memory: false
+    drop_last: false
+    timeout: 0
+    worker_init_fn: null
+    multiprocessing_context: null
+    generator: null
+  optimizer_config:
+    _target_: torch.optim.adam.Adam
+    params: ???
+    lr: 0.002
+    betas:
+    - 0.9
+    - 0.999
+    eps: 1.0e-08
+    weight_decay: 0
+    amsgrad: false
+  scheduler_config:
+    _target_: torch.optim.lr_scheduler.ExponentialLR
+    optimizer: ???
+    gamma: 0.9999
+    last_epoch: -1
+  logging_config:
+    checkpoint_path: checkpoints
+    tensorboard_log_path: null
+  tune_config:
+    metric: loss
+    mode: min
+    num_samples: 1
+    name: Extra_dark_oak
+    checkpoint_freq: 100
+    checkpoint_at_end: true
+    additional_config: {}
+  _target_: artefact_nca.trainer.replication_nca_trainer.ReplicationNCATrainer
+  name: Extra_dark_oak
+  pretrained_path: null
+  visualize_output: false
+  use_cuda: true
+  device_id: 0
+  early_stoppage: true
+  loss_threshold: 0.005
+  batch_size: 5
+  epochs: 20000
+  checkpoint_interval: 100
+  num_samples: null
+  config: {}
+  num_hidden_channels: 12
+  half_precision: false
+  min_steps: 64
+  max_steps: 65
+  damage: false
+  num_damaged: 2
+  damage_radius_denominator: 5
+  torch_seed: null
+  use_dataset: true
+  use_model: true
+  use_iou_loss: true
+  use_bce_loss: false
+  update_dataset: true
+  use_sample_pool: false
+  n_duplications: 3
+  steps_per_duplication: 8
+  norm_grad: false
