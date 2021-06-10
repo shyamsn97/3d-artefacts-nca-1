@@ -35,6 +35,7 @@ class VoxelDataset:
         device: Optional[Any] = None,
         input_shape: Optional[List[int]] = None,
         padding_by_power: Optional[int] = None,
+        cluster_seed: bool = False,
     ):
         self.entity_name = entity_name
         self.load_entity_config = load_entity_config
@@ -45,6 +46,7 @@ class VoxelDataset:
         self.target_unique_val_dict = target_unique_val_dict
         self.pool_size = pool_size
         self.input_shape = input_shape
+        self.cluster_seed = cluster_seed
         if self.target_voxel is None and self.target_unique_val_dict is None:
             (
                 _,
@@ -112,13 +114,22 @@ class VoxelDataset:
                 for i in range(randint.shape[0]):
                     seed[i, self.depth // 2, 0, self.width // 2, randint[i]] = 1.0
         else:
-            seed[
-                :,
-                self.depth // 2,
-                self.height // 2,
-                self.width // 2,
-                self.num_categories :,
-            ] = 1.0
+            if self.cluster_seed:
+                seed[
+                    :,
+                    (self.depth // 2) - 1:(self.depth // 2),
+                    (self.height // 2) - 1:(self.height // 2),
+                    (self.width // 2) - 1:(self.width // 2),
+                    self.num_categories :,
+                ] = 1.0
+            else:
+                seed[
+                    :,
+                    self.depth // 2,
+                    self.height // 2,
+                    self.width // 2,
+                    self.num_categories :,
+                ] = 1.0
             if self.use_random_seed_block:
                 for i in range(randint.shape[0]):
                     seed[

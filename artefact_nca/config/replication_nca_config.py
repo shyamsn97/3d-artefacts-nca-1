@@ -4,10 +4,16 @@ from omegaconf import MISSING  # Do not confuse with dataclass.MISSING
 from typing import Any, Dict, List, Optional
 
 from artefact_nca.config.base import make_trainer_defaults
-from artefact_nca.config.voxel_nca_config import VoxelCATrainerConfig
+from artefact_nca.config.voxel_nca_config import VoxelCATrainerConfig, VoxelCADatasetConfig
 from artefact_nca.config.config_utils import add_configs
 
-trainer_defaults = [{"model_config": "voxel"}, {"dataset_config": "voxel"}]
+
+@dataclass
+class ReplicationNCADatasetConfig(VoxelCADatasetConfig):
+    cluster_seed: bool = True
+
+
+trainer_defaults = [{"model_config": "voxel"}, {"dataset_config": "replication"}]
 
 @dataclass
 class ReplicationNCATrainerConfig(VoxelCATrainerConfig):
@@ -30,6 +36,7 @@ class ReplicationNCAConfig:
 
 
 config_dicts: List[Dict[str, Any]] = [
+    dict(group="trainer/dataset_config", name="replication", node=ReplicationNCADatasetConfig),
     dict(group="trainer", name="replication", node=ReplicationNCATrainerConfig),
     dict(name="replication", node=ReplicationNCAConfig),
 ]

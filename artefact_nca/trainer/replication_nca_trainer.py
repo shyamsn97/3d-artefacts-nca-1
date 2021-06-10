@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 import attr
 from einops import rearrange
 
@@ -10,6 +11,41 @@ class ReplicationNCATrainer(VoxelCATrainer):
     n_duplications: int = attr.ib(default=5)
     steps_per_duplication: int = attr.ib(default=8)
     norm_grad: bool = attr.ib(default=False)
+
+    def iou(self, out, targets):
+        targets = torch.clamp(targets, min=0, max=1)
+        out = torch.clamp(
+            torch.argmax(out[:, : self.num_categories, :, :, :], 1), min=0, max=1
+        )
+        intersect = torch.sum(out & targets).float()
+        union = torch.sum(out | targets).float()
+        o = (union - intersect) / (union + 1e-8)
+        return o
+
+    def get_loss(self, x, targets):
+        iou_loss = 0
+        if self.use_iou_loss:
+            iou_loss = self.iou(x, targets)
+        if self.use_bce_loss:
+            class_loss = F.cross_entropy(
+                x[:, : self.num_categories, :, :, :], targets, ignore_index=0
+            )
+            alive = torch.clip(x[:, self.num_categories, :, :, :], 0.0, 1.0)
+            alive_target_cells = torch.clip(targets, 0, 1).float()
+            alive_loss = torch.nn.MSELoss()(alive, alive_target_cells)
+        else:
+            class_loss = F.cross_entropy(
+                x[:, : self.num_categories, :, :, :], targets, ignore_index=0
+            )
+            weight = torch.zeros(self.num_categories)
+            weight[0] = 1.0
+            alive_loss = F.cross_entropy(
+                x[:, : self.num_categories, :, :, :],
+                targets,
+                weight=weight.to(self.device),
+            )
+        loss = (0.5 * class_loss + 0.5 * alive_loss + iou_loss) / 3.0
+        return loss.mean(), iou_loss
 
     def duplicate(self, x, shape=None):
         if shape is None:

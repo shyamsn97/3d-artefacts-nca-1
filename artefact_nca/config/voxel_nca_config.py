@@ -55,7 +55,7 @@ class VoxelCADatasetConfig(BaseDatasetConfig):
     half_precision: Any = II("trainer.half_precision")
     pool_size: int = 32
     padding_by_power: Optional[int] = None
-
+    cluster_seed: bool = False
 
 trainer_defaults = [{"model_config": "voxel"}, {"dataset_config": "voxel"}]
 
